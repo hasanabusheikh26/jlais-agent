@@ -98,9 +98,10 @@ export default function ToolPanel({
               type: "response.create",
               response: {
                 instructions: `
-                Validate understanding! Ask: "Do you like these colors?" or "Are these the colors you wanted?"
-                If they seem confused, ask: "Did you want different colors?"
-                Keep it SHORT and positive: "Wow!" "Beautiful!" "Let's try again!"
+                You just showed pretty colors to a 3-5 year old! Now ask them simple questions like:
+                "Do you like these colors?" or "Which color is your favorite?" or "What do these colors remind you of?"
+                Keep it very simple and encouraging. Use words like "Wow!" "Pretty!" "Beautiful!" 
+                Maybe ask if they want to see different colors next time.
               `,
               },
             });
@@ -120,7 +121,7 @@ export default function ToolPanel({
   return (
     <section className="h-full w-full flex flex-col gap-4">
       <div className="h-full bg-gradient-to-b from-purple-50 to-pink-50 rounded-xl p-4 border-2 border-purple-200">
-        <h2 className="text-xl font-bold text-purple-700 text-center mb-4"> Colors! </h2>
+        <h2 className="text-xl font-bold text-purple-700 text-center mb-4">Colors! </h2>
         {isSessionActive
           ? (
             functionCallOutput

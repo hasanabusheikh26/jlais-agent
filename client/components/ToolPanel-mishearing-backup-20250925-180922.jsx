@@ -98,9 +98,8 @@ export default function ToolPanel({
               type: "response.create",
               response: {
                 instructions: `
-                Validate understanding! Ask: "Do you like these colors?" or "Are these the colors you wanted?"
-                If they seem confused, ask: "Did you want different colors?"
-                Keep it SHORT and positive: "Wow!" "Beautiful!" "Let's try again!"
+                Quick response! Ask: "Do you like these colors?" or "Which is pretty?" 
+                Keep it SHORT and excited: "Wow!" "Beautiful!" "Cool!"
               `,
               },
             });
@@ -120,7 +119,7 @@ export default function ToolPanel({
   return (
     <section className="h-full w-full flex flex-col gap-4">
       <div className="h-full bg-gradient-to-b from-purple-50 to-pink-50 rounded-xl p-4 border-2 border-purple-200">
-        <h2 className="text-xl font-bold text-purple-700 text-center mb-4"> Colors! </h2>
+        <h2 className="text-xl font-bold text-purple-700 text-center mb-4">Pretty Colors! </h2>
         {isSessionActive
           ? (
             functionCallOutput

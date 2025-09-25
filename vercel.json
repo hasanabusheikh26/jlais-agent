@@ -1,29 +1,12 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["client/**", "server.js"]
-      }
+  "functions": {
+    "server.js": {
+      "runtime": "@vercel/node@18"
     }
-  ],
+  },
   "routes": [
-    {
-      "src": "/token",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/session",
-      "dest": "/server.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/server.js"
-    }
-  ],
-  "env": {
-    "NODE_ENV": "production"
-  }
+    { "src": "/token", "dest": "/server.js" },
+    { "src": "/session", "dest": "/server.js" },
+    { "src": "/(.*)", "dest": "/server.js" }
+  ]
 }

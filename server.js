@@ -8,12 +8,15 @@ app.use(express.text());
 const port = process.env.PORT || 3000;
 const apiKey = process.env.OPENAI_API_KEY;
 
-// Configure Vite middleware for React client
-const vite = await createViteServer({
-  server: { middlewareMode: true },
-  appType: "custom",
-});
-app.use(vite.middlewares);
+// Configure Vite middleware for React client (only in development)
+let vite;
+if (process.env.NODE_ENV !== 'production') {
+  vite = await createViteServer({
+    server: { middlewareMode: true },
+    appType: "custom",
+  });
+  app.use(vite.middlewares);
+}
 
 const sessionConfig = JSON.stringify({
   session: {
@@ -87,20 +90,68 @@ app.use("*", async (req, res, next) => {
   const url = req.originalUrl;
 
   try {
-    const template = await vite.transformIndexHtml(
-      url,
-      fs.readFileSync("./client/index.html", "utf-8"),
-    );
-    const { render } = await vite.ssrLoadModule("./client/entry-server.jsx");
-    const appHtml = await render(url);
-    const html = template.replace(`<!--ssr-outlet-->`, appHtml?.html);
-    res.status(200).set({ "Content-Type": "text/html" }).end(html);
+    if (process.env.NODE_ENV === 'production') {
+      // In production, serve a simple HTML file
+      const html = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JLAIS - AI Friend for Kids</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 0; }
+      .gradient-bg { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div id="root">
+        <div class="min-h-screen flex items-center justify-center p-4">
+            <div class="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center">
+                <h1 class="text-3xl font-bold text-purple-600 mb-4">🌟 JLAIS</h1>
+                <p class="text-lg text-gray-700 mb-6">Your magical AI friend for ages 3-5!</p>
+                <p class="text-sm text-gray-500 mb-4">This is a serverless deployment. For full functionality, please run locally.</p>
+                <div class="space-y-2">
+                    <p class="text-sm"><strong>Features:</strong></p>
+                    <p class="text-xs">✅ Child-optimized voice recognition</p>
+                    <p class="text-xs">✅ Smart mishearing handling</p>
+                    <p class="text-xs">✅ Beautiful color learning tools</p>
+                    <p class="text-xs">✅ Safe and encouraging for kids</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>`;
+      res.status(200).set({ "Content-Type": "text/html" }).end(html);
+    } else {
+      // Development mode with Vite
+      const template = await vite.transformIndexHtml(
+        url,
+        fs.readFileSync("./client/index.html", "utf-8"),
+      );
+      const { render } = await vite.ssrLoadModule("./client/entry-server.jsx");
+      const appHtml = await render(url);
+      const html = template.replace(`<!--ssr-outlet-->`, appHtml?.html);
+      res.status(200).set({ "Content-Type": "text/html" }).end(html);
+    }
   } catch (e) {
-    vite.ssrFixStacktrace(e);
+    if (vite) {
+      vite.ssrFixStacktrace(e);
+    }
     next(e);
   }
 });
 
-app.listen(port, () => {
-  console.log(`Express server running on *:${port}`);
-});
+// Export for Vercel serverless functions
+export default app;
+
+// For local development
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(port, () => {
+    console.log(`Express server running on *:${port}`);
+  });
+}

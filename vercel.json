@@ -1,14 +1,13 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
+  "functions": {
+    "api/server.js": {
+      "runtime": "nodejs18.x"
     }
-  ],
+  },
   "routes": [
-    { "src": "/token", "dest": "/server.js" },
-    { "src": "/session", "dest": "/server.js" },
-    { "src": "/(.*)", "dest": "/server.js" }
+    { "src": "/api/(.*)", "dest": "/api/server.js" },
+    { "src": "/token", "dest": "/api/server.js" },
+    { "src": "/session", "dest": "/api/server.js" },
+    { "src": "/", "dest": "/api/server.js" }
   ]
 }
